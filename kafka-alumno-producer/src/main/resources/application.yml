@@ -1,0 +1,51 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:mariadb://${host:localhost}:${port:3306}/${database:demobd}?useUnicode=true&characterEncoding=utf8&useSSL=false&requireSSL=false
+    username: ${username:root}
+    password: ${password:toor}
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect #org.hibernate.dialect.MySQL8Dialect 10.11 #org.hibernate.dialect.MySQLDialect 10
+    defer-datasource-initialization: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:localhost:9092}
+    producer:
+      security:
+        protocol: PLAINTEXT
+      acks: all
+      transaction-id-prefix: "tx-${random.uuid}"
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        "[enable.idempotence]": true
+        "[transactional.id]": tx-id-${random.uuid}
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+app:
+  topic:
+    alumnos: ${TOPIC_A:alumnos_notas}
+
+logging:
+  level:
+    root: INFO
+    "[org.springframework.web]": INFO
+    "[org.springframework.kafka]": DEBUG
+    "[com.example]": DEBUG
+
+# testing
+# curl -i -X POST -H 'Content-Type: application/json' -d '{"nombre":"fulano","edad":18,"sexo":"M"}' http://localhost:8080/api/personas/
+# curl -i -X POST -H 'Content-Type: application/json' -d '{"id":1,"nombre":"fulano","edad":18,"sexo":"M"}' http://localhost:8080/api/personas/
+# curl -i http://localhost:8080/api/personas/
