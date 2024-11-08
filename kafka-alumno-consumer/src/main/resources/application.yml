@@ -1,0 +1,66 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mariadb://${host:localhost}:${port:3306}/${database:demobd}?useUnicode=true&characterEncoding=utf8&useSSL=false&requireSSL=false
+    username: ${username:root}
+    password: ${password:toor}
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    defer-datasource-initialization: true
+    generate-ddl: false
+    properties:
+      "[hibernate.jdbc.time_zone]": UTC
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:localhost:9092}
+    # listener:
+      # concurrency: 1
+      # ack-mode: MANUAL_IMMEDIATE
+    consumer:
+      auto-commit-interval: 100
+      enable-auto-commit: false
+      security:
+        protocol: PLAINTEXT
+      group-id: ${GROUP_ID:transactions}
+      auto-offset-reset: latest
+      isolation-level: read-committed
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        "[spring.json.trusted.packages]": "*"
+        "[spring.deserializer.key.delegate.class]": org.apache.kafka.common.serialization.StringDeserializer
+        "[spring.deserializer.value.delegate.class]": org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      security:
+        protocol: PLAINTEXT
+      acks: all
+      transaction-id-prefix: "tx-${random.uuid}"
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        "[enable.idempotence]": true
+        "[transactional.id]": txx-id-2
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+app:
+  topic:
+    alumnos: ${TOPIC_A:alumnos_notas}
+
+logging:
+  level:
+    root: INFO
+    "[org.springframework.web]": INFO
+    "[org.springframework.kafka]": DEBUG
+    "[org.springframework.data]": INFO
+    "[com.example]": DEBUG

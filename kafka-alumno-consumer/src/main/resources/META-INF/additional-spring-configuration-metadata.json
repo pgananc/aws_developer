@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "app.topic.sample",
+    "type": "java.lang.String",
+    "description": "A description for 'app.topic.sample'"
+  },
+  {
+    "name": "app.topic.alumnos",
+    "type": "java.lang.String",
+    "description": "A description for 'app.topic.alumnos'"
+  }
+]}
